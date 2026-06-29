@@ -1,7 +1,6 @@
-# Bilibili Toolkit
-
+# bili-tool
+注:本项目由ai编写，我未参与编写
 B站综合工具包 — 搜索视频、搜索番剧、提取弹幕、评论区、UP主信息、热搜榜。
-
 基于 [bilibili-api-python](https://github.com/Nemo2011/bilibili-api) (400+ API) 构建，包含 CLI 工具和 REST API 服务器。
 
 ## 功能
@@ -60,7 +59,7 @@ python main.py hot
 
 ## REST API Server
 
-纯 asyncio HTTP 服务器（无 uvicorn 依赖），延迟导入，空闲仅 ~16MB 内存。
+纯 asyncio HTTP 服务器（无 uvicorn 依赖），延迟导入，空闲仅 ~16MB 内存(仅参考)。
 
 ### 启动
 
@@ -142,7 +141,7 @@ curl -X POST http://127.0.0.1:18020/api/hot \
 
 ## 配置
 
-敏感信息全部通过 `BILI_TOOLKIT_*` 环境变量注入，代码中零硬编码。
+敏感信息全部通过 `BILI_TOOLKIT_*` 环境变量注入。
 
 | 环境变量 | 必须 | 说明 |
 |----------|------|------|
@@ -160,10 +159,10 @@ curl -X POST http://127.0.0.1:18020/api/hot \
 - **自动过滤**预告/PV/主题曲，只返回正片分集
 - 部分番剧因 B站无版权搜不到（如进击的巨人、我推的孩子）
 
-## 致谢
+## 代码参考
 
 - **[bilibili-api-python](https://github.com/Nemo2011/bilibili-api)** — 核心依赖，400+ B站 API，处理 WBI 签名、反爬、异步
-- **[bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)** — API 文档参考（已停止维护）
+- **[bilibili-API-collect](https://github.com/SocialSisterYi/bilibili-API-collect)** — API 文档参考
 
 ## License
 
