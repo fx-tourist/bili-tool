@@ -1,0 +1,19 @@
+[Unit]
+Description=Bilibili Toolkit API Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/bilibili-toolkit
+Environment=BILI_TOOLKIT_TOKEN=fx_tourist
+Environment=BILI_TOOLKIT_PORT=18020
+Environment=BILI_TOOLKIT_CONFIG=/opt/bilibili-toolkit/config.json
+Environment=BILI_TOOLKIT_SESSDATA=4ac953c5%%2C1796391575%%2C47615%%2A61CjCqbWCBOMUM0vpWdgn_5JMQeZYU6tLMOa4LCCmcTwS6ceBOgx44NjCtmhKuoUsnbgQSVjZJUDl0ZUhjcHdFMlkyQlYzQ0ZuTDhiYUFJdzNMaGJiMUdTd29LQTNCdWk5MDhqbDVBVm1CVVZNWlhhMUpXNTNIQTdSUXZ0WlZPdWwxVHZsRG9sYjBRIIEC
+Environment=BILI_TOOLKIT_BILI_JCT=b85b1e48c2f3b745c4f478ef00f1a99b
+Environment=BILI_TOOLKIT_BUVID3=D9CEB225-747E-9ADF-E2D3-562CA758D84D41097infoc
+ExecStart=/opt/bilibili-toolkit/venv/bin/python3 /opt/bilibili-toolkit/api_server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
