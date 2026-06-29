@@ -1,6 +1,8 @@
 # bili-tool
 注:本项目由ai编写，我未参与编写
+
 B站综合工具包 — 搜索视频、搜索番剧、提取弹幕、评论区、UP主信息、热搜榜。
+
 基于 [bilibili-api-python](https://github.com/Nemo2011/bilibili-api) (400+ API) 构建，包含 CLI 工具和 REST API 服务器。
 
 ## 功能
