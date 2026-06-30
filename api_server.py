@@ -296,19 +296,39 @@ async def api_info(data):
 async def api_comments(data):
     _lazy_import()
     bvid = data.get("bvid", "")
-    if not bvid:
-        return {"ok": False, "error": "缺少 bvid 参数"}
+    ssid = data.get("ssid")
+    episode = data.get("episode")
+
+    if not bvid and not ssid:
+        return {"ok": False, "error": "缺少 bvid 或 ssid 参数"}
+
+    cred = get_credential()
+
+    # 番剧评论模式：ssid + episode → aid
+    if ssid:
+        b = _bangumi.Bangumi(ssid=ssid, credential=cred)
+        meta = await b.get_meta()
+        title = meta.get("media", {}).get("title", "未知番剧")
+        episodes = await b.get_episodes()
+        if not episodes:
+            return {"ok": False, "error": "无分集信息"}
+        ep_idx = (episode or 1) - 1
+        if ep_idx < 0 or ep_idx >= len(episodes):
+            return {"ok": False, "error": f"集数超出范围 (1-{len(episodes)})"}
+        ep_info = await episodes[ep_idx].get_info()
+        aid = ep_info["aid"]
+        ep_title = ep_info.get("long_title") or ep_info.get("title", f"第{episode}集")
+        title = f"{title} - {ep_title}"
+    else:
+        v = _video.Video(bvid=bvid, credential=cred)
+        info = await v.get_info()
+        aid = info["aid"]
+        title = info["title"]
 
     mode = data.get("mode", 2)
     limit = data.get("limit", 20)
     max_count = data.get("max_count", 0)
     sub = data.get("sub", True)
-
-    cred = get_credential()
-    v = _video.Video(bvid=bvid, credential=cred)
-    info = await v.get_info()
-    aid = info["aid"]
-    title = info["title"]
 
     comments_list = []
     offset = ""
@@ -507,9 +527,11 @@ th{color:#58a6ff}
 <div class="endpoint"><h3><span class="method">POST</span> <span class="path">/api/info</span> — 视频信息</h3>
 <table><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr>
 <tr><td class="param">bvid</td><td>string</td><td>✅</td><td>视频BV号</td></tr></table></div>
-<div class="endpoint"><h3><span class="method">POST</span> <span class="path">/api/comments</span> — 评论区</h3>
+<div class="endpoint"><h3><span class="method">POST</span> <span class="path">/api/comments</span> — 评论区（支持视频和番剧）</h3>
 <table><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr>
-<tr><td class="param">bvid</td><td>string</td><td>✅</td><td>视频BV号</td></tr>
+<tr><td class="param">bvid</td><td>string</td><td>二选一</td><td>视频BV号</td></tr>
+<tr><td class="param">ssid</td><td>int</td><td>二选一</td><td>番剧season_id（从/api/bangumi获取）</td></tr>
+<tr><td class="param">episode</td><td>int</td><td></td><td>集数，从1开始（默认1）</td></tr>
 <tr><td class="param">mode</td><td>int</td><td></td><td>2=最新(默认)，3=热门</td></tr>
 <tr><td class="param">limit</td><td>int</td><td></td><td>返回条数，默认20</td></tr>
 <tr><td class="param">sub</td><td>bool</td><td></td><td>展开子评论，默认true</td></tr></table></div>
