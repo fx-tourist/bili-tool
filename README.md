@@ -97,7 +97,7 @@ sudo systemctl enable --now bilibili-api
 | POST | /api/bangumi | 搜索番剧（自动过滤预告） | ✅ |
 | POST | /api/danmaku | 提取弹幕（视频/番剧） | ✅ |
 | POST | /api/info | 视频详细信息 | ✅ |
-| POST | /api/comments | 评论区 | ✅ |
+| POST | /api/comments | 评论区（支持视频/番剧，支持子评论） | ✅ |
 | POST | /api/user | UP主信息 | ✅ |
 | POST | /api/hot | 热搜榜 | ✅ |
 | GET | /api/health | 健康检查 | ❌ |
@@ -129,11 +129,11 @@ curl -X POST http://127.0.0.1:18020/api/hot \
   -H "Content-Type: application/json" \
   -d '{}'
 
-# 番剧评论（通过 season_id + 集数）
+# 番剧评论（通过 season_id + 集数，sub_limit 控制子评论数量）
 curl -X POST http://127.0.0.1:18020/api/comments \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"ssid":45956,"episode":1,"limit":10}'
+  -d '{"ssid":45956,"episode":1,"limit":10,"sub_limit":10}'
 ```
 
 ## 文件说明

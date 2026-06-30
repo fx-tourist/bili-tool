@@ -329,6 +329,7 @@ async def api_comments(data):
     limit = data.get("limit", 20)
     max_count = data.get("max_count", 0)
     sub = data.get("sub", True)
+    sub_limit = data.get("sub_limit", 5)
 
     comments_list = []
     offset = ""
@@ -364,8 +365,8 @@ async def api_comments(data):
                     oid=aid, type_=_comment.CommentResourceType.VIDEO,
                     rpid=rpid, credential=cred,
                 )
-                sub_result = await cm.get_sub_comments(page_index=1, page_size=20)
-                for sr in (sub_result.get("replies") or [])[:5]:
+                sub_result = await cm.get_sub_comments(page_index=1, page_size=min(sub_limit, 20))
+                for sr in (sub_result.get("replies") or [])[:sub_limit]:
                     comment_item["sub_comments"].append({
                         "user": sr.get("member", {}).get("uname", ""),
                         "text": sr.get("content", {}).get("message", ""),
@@ -534,7 +535,8 @@ th{color:#58a6ff}
 <tr><td class="param">episode</td><td>int</td><td></td><td>集数，从1开始（默认1）</td></tr>
 <tr><td class="param">mode</td><td>int</td><td></td><td>2=最新(默认)，3=热门</td></tr>
 <tr><td class="param">limit</td><td>int</td><td></td><td>返回条数，默认20</td></tr>
-<tr><td class="param">sub</td><td>bool</td><td></td><td>展开子评论，默认true</td></tr></table></div>
+<tr><td class="param">sub</td><td>bool</td><td></td><td>展开子评论，默认true</td></tr>
+<tr><td class="param">sub_limit</td><td>int</td><td></td><td>每条主评论返回的子评论数量，默认5</td></tr></table></div>
 <div class="endpoint"><h3><span class="method">POST</span> <span class="path">/api/user</span> — UP主信息</h3>
 <table><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr>
 <tr><td class="param">mid</td><td>int</td><td>✅</td><td>用户UID</td></tr></table></div>
