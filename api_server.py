@@ -163,20 +163,39 @@ async def api_bangumi(data):
     page = data.get("page", 1)
     limit = data.get("limit", 10)
 
-    result = await _search.search_by_type(
+    # 同时搜索番剧(BANGUMI)和影视(FT)，合并结果
+    bangumi_task = _search.search_by_type(
         keyword=keyword,
         search_type=_search.SearchObjectType.BANGUMI,
         page=page,
     )
+    ft_task = _search.search_by_type(
+        keyword=keyword,
+        search_type=_search.SearchObjectType.FT,
+        page=page,
+    )
+    bangumi_result, ft_result = await asyncio.gather(bangumi_task, ft_task, return_exceptions=True)
 
+    raw_items = []
+    for result in (bangumi_result, ft_result):
+        if isinstance(result, Exception):
+            continue
+        raw_items.extend(result.get("result", []) or [])
+
+    # 按 season_id 去重
+    seen = set()
     items = []
-    for item in (result.get("result", []) or [])[:limit]:
+    for item in raw_items:
+        sid = item.get("season_id")
+        if sid in seen:
+            continue
+        seen.add(sid)
         score_info = item.get("media_score", {})
         eps = item.get("eps", [])
         items.append({
             "title": item.get("title", "").replace('<em class="keyword">', "").replace("</em>", ""),
             "org_title": item.get("org_title", "").replace('<em class="keyword">', "").replace("</em>", ""),
-            "season_id": item.get("season_id", ""),
+            "season_id": sid,
             "type": item.get("season_type_name", ""),
             "areas": item.get("areas", ""),
             "styles": item.get("styles", ""),
@@ -192,7 +211,7 @@ async def api_bangumi(data):
             ],
         })
 
-    return {"ok": True, "total": result.get("numResults", 0), "items": items}
+    return {"ok": True, "total": len(items), "items": items[:limit]}
 
 
 async def api_danmaku(data):
