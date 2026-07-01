@@ -191,7 +191,7 @@ async def api_bangumi(data):
             continue
         seen.add(sid)
         score_info = item.get("media_score", {})
-        eps = item.get("eps", [])
+        eps = item.get("eps") or []
         items.append({
             "title": item.get("title", "").replace('<em class="keyword">', "").replace("</em>", ""),
             "org_title": item.get("org_title", "").replace('<em class="keyword">', "").replace("</em>", ""),
